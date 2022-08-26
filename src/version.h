@@ -12,7 +12,7 @@
 #define BUILD_DETAILS   STR(VER_TIME) " (" STR(GIT) ")"
 #define BUILD_LEGAL     "Copyright \xa9 " STR(VER_YEAR) " " AUTHOR
 
-#define BUILD_FULLINFO  "Built on " BUILD_DETAILS " using " __VERSION__
+#define BUILD_FULLINFO  "Built on " BUILD_DETAILS
 
 #define VSTRING         BUILD_ID " " BUILD_FULLINFO "\r\n"
 #define VERSTAG         "\0$VER: " BUILD_ID " " BUILD_LEGAL

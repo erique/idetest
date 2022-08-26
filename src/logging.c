@@ -1,11 +1,14 @@
 #include <stdarg.h>
 #include <stddef.h>
 #include <stdint.h>
+#include <memory.h>
+#include <ctype.h>
 
 #include <exec/types.h>
 #include <inline/exec.h>
 
 #include "logging.h"
+#include "version.h"
 
 #define RawPutChar(___ch) \
     LP1NR(516, RawPutChar , BYTE, ___ch, d0,\
@@ -47,6 +50,16 @@ int kvprintf(const char* format, va_list ap)
 #define SGR_MAGENTA 35
 #define SGR_CYAN    36
 #define SGR_WHITE   37
+
+#define STR_RESET   "\x1b[" STR(SGR_RESET)   "m"
+#define STR_BLACK   "\x1b[" STR(SGR_BLACK)   "m"
+#define STR_RED     "\x1b[" STR(SGR_RED)     "m"
+#define STR_GREEN   "\x1b[" STR(SGR_GREEN)   "m"
+#define STR_YELLOW  "\x1b[" STR(SGR_YELLOW)  "m"
+#define STR_BLUE    "\x1b[" STR(SGR_BLUE)    "m"
+#define STR_MAGENTA "\x1b[" STR(SGR_MAGENTA) "m"
+#define STR_CYAN    "\x1b[" STR(SGR_CYAN)    "m"
+#define STR_WHITE   "\x1b[" STR(SGR_WHITE)   "m"
 
 int klog(int prio, const char* tag, const char* fmt, ... )
 {
@@ -112,4 +125,65 @@ int klog(int prio, const char* tag, const char* fmt, ... )
     kprintf("\x1b[%ldm", SGR_RESET);
 
     return ret;
+}
+
+void klogmem(const uint8_t* buffer, uint32_t size)
+{
+    uint32_t i, j, len;
+    char format[150];
+    char alphas[27];
+    strcpy(format, "[" STR_CYAN "$%08lx" STR_RESET "] [" STR_YELLOW "%03lx" STR_RESET "]: " STR_WHITE "%04lx %04lx %04lx %04lx %04lx %04lx %04lx %04lx ");
+
+    KVERBOSE("MEM", "Memory at address $%lx, size %ld bytes (%08lx - %08lx)\n", buffer, size, buffer, buffer + size - 1);
+
+    for (i = 0; i < size; i += 16)
+    {
+        len = size - i;
+
+        // last line is less than 16 bytes? rewrite the format string
+        if (len < 16)
+        {
+            strcpy(format, "$%08lx [%03lx]: ");
+
+            for (j = 0; j < 16; j += 2)
+            {
+                if (j < len)
+                {
+                    strcat(format, "%04lx");
+
+                }
+                else
+                {
+                    strcat(format, "____");
+                }
+
+                strcat(format, " ");
+            }
+
+        }
+        else
+        {
+            len = 16;
+        }
+
+        // create the ascii representation
+        alphas[0] = '\'';
+
+        for (j = 0; j < len; ++j)
+        {
+            alphas[j + 1] = (isgraph(buffer[i + j]) ? buffer[i + j] : '.');
+        }
+
+        for (; j < 16; ++j)
+        {
+            alphas[j + 1] = '_';
+        }
+
+        strcpy(&alphas[j + 1], "'\n");
+
+        uint16_t* p = (uint16_t*)&buffer[i];
+        (void)p;
+        kprintf(format, buffer + i, i, p[0], p[1], p[2], p[3], p[4], p[5], p[6], p[7]);
+        kprintf(STR_GREEN "%s" STR_RESET, alphas);
+    }
 }

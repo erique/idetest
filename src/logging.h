@@ -1,6 +1,7 @@
 #pragma once
 
 #include <stdarg.h>
+#include <stdint.h>
 
 int kprintf(const char* format, ...);
 int kvprintf(const char* format, va_list ap);
@@ -14,6 +15,7 @@ int kvprintf(const char* format, va_list ap);
 #define LOG_VERBOSE (6)
 
 int klog(int prio, const char* tag, const char* fmt, ... );
+void klogmem(const uint8_t* buffer, uint32_t size);
 
 #ifndef LOG_LEVEL
 #define LOG_LEVEL LOG_VERBOSE
