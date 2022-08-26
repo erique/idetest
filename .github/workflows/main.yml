@@ -19,6 +19,9 @@ jobs:
 
       - name: Install amitools
         run: apt update && apt install -y pip && pip install amitools
+        
+      - name: Add git safedir
+        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
 
       - name: Build and test
         run: make test
