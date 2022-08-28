@@ -1,8 +1,6 @@
 #include <stdarg.h>
 #include <stddef.h>
 #include <stdint.h>
-#include <memory.h>
-#include <ctype.h>
 
 #include <exec/types.h>
 #include <inline/exec.h>
@@ -125,6 +123,28 @@ int klog(int prio, const char* tag, const char* fmt, ... )
     kprintf("\x1b[%ldm", SGR_RESET);
 
     return ret;
+}
+
+char * strcpy(char *to, const char *from)
+{
+    char *save = to;
+
+    for (; (*to = *from) != '\0'; ++from, ++to);
+    return(save);
+}
+
+char* strcat(char *s, const char *append)
+{
+    char *save = s;
+
+    for (; *s; ++s);
+    while ((*s++ = *append++) != '\0');
+    return(save);
+}
+
+int isgraph(int c)
+{
+    return 0x21 <= c && c <= 0x7e;
 }
 
 void klogmem(const uint8_t* buffer, uint32_t size)

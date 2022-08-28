@@ -9,9 +9,9 @@ CC=m68k-amigaos-gcc
 AS=vasmm68k_mot
 STRIP=m68k-amigaos-strip
 SIZE=m68k-amigaos-size
-CFLAGS=-Os -mregparm=4 -fomit-frame-pointer -Wall -Werror
+CFLAGS=-m68020 -Os -mregparm=4 -fomit-frame-pointer -Wall -Werror
 ASFLAGS=-Fhunk -opt-fconst -quiet -nowarn=62
-LDFLAGS=-noixemul
+LDFLAGS=-nodefaultlibs -specs=specs.txt -Wl,-gc-sections
 
 GIT_HEADER:=$(OUTDIR)/git.h
 
@@ -52,6 +52,8 @@ CFLAGS+=-DVER_DATE=$(VER_DATE)
 CFLAGS+=-DVER_TIME=$(VER_TIME)
 CFLAGS+=-DVER_YEAR=$(VER_YEAR)
 CFLAGS+=-DTARGET=$(TARGET)
+
+ASFLAGS+=-DVERSION=$(VERSION)
 
 GCC_ROOT:=$(abspath $(addsuffix ..,$(dir $(shell which m68k-amigaos-gcc))))
 ASFLAGS+=-I$(GCC_ROOT)/m68k-amigaos/ndk-include
@@ -100,7 +102,7 @@ astyle:
 ##
 
 # All objects depend on Makefile changes (to pick up CFLAGS changes etc)
-$(OBJS) : $(MAKEFILE_LIST) VERSION REVISION
+$(OBJS) : $(MAKEFILE_LIST) VERSION REVISION specs.txt
 
 # Include all generated .d files
 -include $(DEPS)
