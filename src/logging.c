@@ -125,24 +125,27 @@ int klog(int prio, const char* tag, const char* fmt, ... )
     return ret;
 }
 
-char * strcpy(char *to, const char *from)
+static char* strcpy(char* to, const char* from)
 {
-    char *save = to;
+    char* save = to;
 
     for (; (*to = *from) != '\0'; ++from, ++to);
-    return(save);
+
+    return (save);
 }
 
-char* strcat(char *s, const char *append)
+static char* strcat(char* s, const char* append)
 {
-    char *save = s;
+    char* save = s;
 
     for (; *s; ++s);
+
     while ((*s++ = *append++) != '\0');
-    return(save);
+
+    return (save);
 }
 
-int isgraph(int c)
+static int isgraph(int c)
 {
     return 0x21 <= c && c <= 0x7e;
 }
@@ -163,7 +166,7 @@ void klogmem(const uint8_t* buffer, uint32_t size)
         // last line is less than 16 bytes? rewrite the format string
         if (len < 16)
         {
-            strcpy(format, "$%08lx [%03lx]: ");
+            strcpy(format, "[" STR_CYAN "$%08lx" STR_RESET "] [" STR_YELLOW "%03lx" STR_RESET "]: " STR_WHITE);
 
             for (j = 0; j < 16; j += 2)
             {
