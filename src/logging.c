@@ -155,9 +155,13 @@ void klogmem(const uint8_t* buffer, uint32_t size)
     uint32_t i, j, len;
     char format[150];
     char alphas[27];
-    strcpy(format, "[" STR_CYAN "$%08lx" STR_RESET "] [" STR_YELLOW "%03lx" STR_RESET "]: " STR_WHITE "%04lx %04lx %04lx %04lx %04lx %04lx %04lx %04lx ");
 
     KVERBOSE("MEM", "Memory at address $%lx, size %ld bytes (%08lx - %08lx)\n", buffer, size, buffer, buffer + size - 1);
+
+    if (LOG_LEVEL < LOG_DEBUG)
+        return;
+
+    strcpy(format, "[" STR_CYAN "$%08lx" STR_RESET "] [" STR_YELLOW "%03lx" STR_RESET "]: " STR_WHITE "%04lx %04lx %04lx %04lx %04lx %04lx %04lx %04lx ");
 
     for (i = 0; i < size; i += 16)
     {
